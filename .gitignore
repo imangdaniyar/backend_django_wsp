@@ -1,0 +1,6 @@
+/venv/
+/client/
+/static/
+.env
+.idea
+/templates/
