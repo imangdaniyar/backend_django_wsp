@@ -19,5 +19,9 @@ urlpatterns += [
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('verify/', TokenVerifyView.as_view(), name='token_verify'),
+
+    # CategoryView
+    path('course_files/', CourseFilesView.as_view(), name='course_files'),
+
 ]
 # urlpatterns += staticfiles_urlpatterns

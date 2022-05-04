@@ -55,9 +55,34 @@ class TutorAdmin(admin.ModelAdmin):
 
 @admin.register(CourseSchedule)
 class CourseScheduleAdmin(admin.ModelAdmin):
-    list_display = ('course','begin', 'end')
+    list_display = ('course', 'begin', 'end')
 
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('course_schedule',)
+
+
+@admin.register(Faculty)
+class FacultyAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+@admin.register(Speciality)
+class FacultyAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+@admin.register(Position)
+class PositionAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+#
+# @admin.register(Faculty)
+# class FacultyAdmin(admin.ModelAdmin):
+#     list_display = ('name',)
+#
+#
+# @admin.register(Faculty)
+# class FacultyAdmin(admin.ModelAdmin):
+#     list_display = ('name',)
