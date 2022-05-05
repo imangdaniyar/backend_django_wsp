@@ -7,7 +7,7 @@ from .views import *
 
 router = DefaultRouter()
 router.register(r'news', NewsViewSet, basename='news')
-router.register(r'course', CourseViewSet, basename='course')
+# router.register(r'course', CourseViewSet, basename='course')
 router.register(r'schedule', ScheduleViewSet, basename='schedule')
 router.register(r'course_schedule', CourseScheduleViewSet, basename='course_schedule')
 router.register(r'tutor', TutorViewSet, basename='tutor')
@@ -20,8 +20,14 @@ urlpatterns += [
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('verify/', TokenVerifyView.as_view(), name='token_verify'),
 
-    # CategoryView
+    # API Views
     path('course_files/', CourseFilesView.as_view(), name='course_files'),
+    path('specialities/', SpecialityView.as_view(), name='specialities'),
+    path('courses/', CourseView.as_view(), name='courses'),
+    path('faculties/', FacultyView.as_view(), name='faculties'),
+
+    # FBV Views
+    path('positions/', get_positions, name='positions'),
 
 ]
 # urlpatterns += staticfiles_urlpatterns

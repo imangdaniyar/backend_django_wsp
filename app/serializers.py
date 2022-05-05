@@ -80,11 +80,11 @@ class CourseScheduleSerializer(serializers.ModelSerializer):
                      'sunday']
         work_day_begin = datetime.time(8, 0)
         work_day_end = datetime.time(20, 0)
-        if work_day_begin >= data['begin']:
+        if data.get('begin') and work_day_begin >= data['begin']:
             raise serializers.ValidationError(u'Begin time must be after 8 AM')
-        if work_day_end <= data['end']:
+        if data.get('end') and work_day_end <= data['end']:
             raise serializers.ValidationError(u'Begin time must be before 8 PM')
-        if data['week_day'].lower() not in week_days:
+        if data.get('week_day') and data['week_day'].lower() not in week_days:
             raise serializers.ValidationError(u'Incorrect week day')
         return data
 
@@ -143,4 +143,25 @@ class CourseFilesRetrieveSerializer(serializers.Serializer):
 class CourseFilesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseFiles
+        fields = "__all__"
+
+
+class FacultySerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+
+class SpecialitySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    code = serializers.CharField()
+    faculty = FacultySerializer()
+
+
+class PositionSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+
+
+class PositionCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
         fields = "__all__"

@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Model
 from django.utils.translation import gettext_lazy as _
 
-from .managers import CustomUserManager, BaseManager
+from .managers import CustomUserManager, BaseManager, NewsManager, CourseScheduleManager, ScheduleManager
 from .validators import validate_university_email
 
 
@@ -42,6 +42,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Course(models.Model):
+    objects = BaseManager()
+
     name = models.CharField(max_length=100)
     credits = models.IntegerField(default=3)
 
@@ -54,7 +56,7 @@ class Course(models.Model):
 
 
 class News(models.Model):
-    objects = BaseManager()
+    objects = NewsManager()
 
     title = models.CharField(max_length=255)
     content = models.TextField()
@@ -116,6 +118,8 @@ class Tutor(CustomUser):
 
 
 class CourseSchedule(models.Model):
+    objects = CourseScheduleManager()
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, related_name='tutors')
     week_day = models.CharField(max_length=10)
@@ -144,6 +148,8 @@ class CourseFiles(models.Model):
 
 
 class Schedule(models.Model):
+    objects = ScheduleManager()
+
     course_schedule = models.ForeignKey(CourseSchedule, on_delete=models.CASCADE, null=True)
     student = models.ForeignKey(Student, related_name='students', on_delete=models.CASCADE, default=1)
     attestation_first = models.IntegerField(default=0)

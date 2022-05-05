@@ -1,8 +1,10 @@
 import logging
 
 from django.http import JsonResponse
+from django.template.defaulttags import csrf_token
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from rest_framework import status
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -15,9 +17,10 @@ from .serializers import *
 logger = logging.getLogger(__name__)
 
 
-class CourseViewSet(ModelViewSet):
-    queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+#
+# class CourseViewSet(ModelViewSet):
+#     queryset = Course.objects.all()
+#     serializer_class = CourseSerializer
 
 
 class NewsViewSet(ViewSet):
@@ -73,6 +76,11 @@ class ScheduleViewSet(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def list(self, request, *args, **kwargs):
+        queryset = Schedule.objects.get_retake_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
 
 class CourseScheduleViewSet(ModelViewSet):
     queryset = CourseSchedule.objects.all()
@@ -98,9 +106,70 @@ class CourseFilesView(APIView):
             serializer.save()
             logger.info(f'{request.user} uploaded file')
             return JsonResponse(serializer.data)
-        return JsonResponse({'error': "Category name is not valid!"})
+        return JsonResponse({'error': "Course File is not valid!"})
 
     @permission_classes(IsAuthenticated)
     def get(self, request, *args, **kwargs):
         serializer = CourseFilesRetrieveSerializer(CourseFiles.objects.all(), many=True)
         return JsonResponse(serializer.data, safe=False)
+
+
+class FacultyView(APIView):
+    def get(self, request, *args, **kwargs):
+        serializer = FacultySerializer(Faculty.objects.all(), many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    @permission_classes([IsAuthenticated])
+    def post(self, request, *args, **kwargs):
+        data = self.request.data
+        serializer = FacultySerializer(data=data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            logger.info(f'{request.user} faculty created')
+            return JsonResponse(serializer.data)
+        return JsonResponse({'error': "Faculty is not valid!"})
+
+
+class SpecialityView(APIView):
+    def get(self, request, *args, **kwargs):
+        serializer = SpecialitySerializer(Speciality.objects.all(), many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    @permission_classes([IsAuthenticated])
+    def post(self, request, *args, **kwargs):
+        data = self.request.data
+        serializer = SpecialitySerializer(data=data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            logger.info(f'{request.user} faculty created')
+            return JsonResponse(serializer.data)
+        return JsonResponse({'error': "Faculty is not valid!"})
+
+
+class CourseView(APIView):
+    def get(self, request, *args, **kwargs):
+        serializer = CourseSerializer(Course.objects.all(), many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    @permission_classes([IsAuthenticated])
+    def post(self, request, *args, **kwargs):
+        data = self.request.data
+        serializer = CourseSerializer(data=data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            logger.info(f'{request.user} course created')
+            return JsonResponse(serializer.data)
+        return JsonResponse({'error': "Faculty is not valid!"})
+
+@api_view(['GET', 'POST'])
+def get_positions(request):
+    serializer = PositionSerializer(Position.objects.all(), many=True)
+    if request.method == 'GET':
+        return JsonResponse(serializer.data, safe=False)
+    if request.method == 'POST':
+        data = request.data
+        serializer = PositionCreateSerializer(data=data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse({'error': "Position is not valid!"})
